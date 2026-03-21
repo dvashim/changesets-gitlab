@@ -1,5 +1,11 @@
 # changesets-gitlab
 
+## 0.0.4
+
+### Patch Changes
+
+- [#10](https://github.com/dvashim/changesets-gitlab/pull/10) [`29955fd`](https://github.com/dvashim/changesets-gitlab/commit/29955fd63b3b8c35e7b01e622f50f92c5ccf7748) Thanks [@aleksei-reznichenko](https://github.com/aleksei-reznichenko)! - Add package description field to package.json
+
 ## 0.0.3
 
 ### Patch Changes
