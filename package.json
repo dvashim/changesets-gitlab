@@ -1,18 +1,26 @@
 {
   "name": "@dvashim/changesets-gitlab",
-  "version": "0.13.4",
-  "type": "module",
-  "repository": "https://github.com/dvashim/changesets-gitlab.git",
-  "author": "Aleksei Reznichenko <aleksei@dvashim.dev>",
-  "license": "MIT",
-  "packageManager": "pnpm@10.32.1",
-  "engines": {
-    "node": ">=22.0.0"
+  "version": "0.0.1",
+  "keywords": [
+    "@changesets/cli",
+    "auto-release",
+    "changelog",
+    "changeset",
+    "changesets",
+    "ci",
+    "gitlab",
+    "release"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dvashim/changesets-gitlab.git"
   },
-  "bin": "lib/cli.js",
-  "main": "./lib/index.cjs",
-  "types": "./index.d.cts",
-  "module": "./lib/index.js",
+  "license": "MIT",
+  "author": "Aleksei Reznichenko <aleksei@dvashim.dev>",
+  "contributors": [
+    "JounQin <admin@1stg.me>"
+  ],
+  "type": "module",
   "exports": {
     ".": {
       "import": {
@@ -30,31 +38,23 @@
     },
     "./package.json": "./package.json"
   },
+  "main": "./lib/index.cjs",
+  "module": "./lib/index.js",
+  "types": "./index.d.cts",
+  "bin": "lib/cli.js",
   "files": [
     "index.d.cts",
     "lib"
-  ],
-  "keywords": [
-    "@changesets/cli",
-    "auto-release",
-    "changelog",
-    "changeset",
-    "changesets",
-    "ci",
-    "gitlab",
-    "release",
-    "release-automation",
-    "release-plz"
   ],
   "scripts": {
     "build": "pnpm run \"/^build:.*/\"",
     "build:r": "r -f cjs --esbuild '{\"target\":\"es2020\"}'",
     "build:ts": "tsc -p tsconfig.lib.json",
+    "clean": "rm -rf lib coverage *.tsbuildinfo",
     "cli": "tsx src/cli",
     "lint": "pnpm run \"/^lint:.*/\"",
-    "lint:tsc": "tsc --noEmit",
     "lint:biome": "biome check",
-    "release": "pnpm build && clean-pkg-json && changeset publish",
+    "lint:tsc": "tsc --noEmit",
     "test": "vitest run"
   },
   "dependencies": {
@@ -98,5 +98,13 @@
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "vitest": "^4.1.0"
+  },
+  "packageManager": "pnpm@10.32.1",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
   }
 }
