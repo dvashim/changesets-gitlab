@@ -1,6 +1,7 @@
 {
   "name": "@dvashim/changesets-gitlab",
   "version": "0.0.3",
+  "description": "GitLab CI CLI for changesets — automate versioning, changelogs, and publishing via merge requests",
   "keywords": [
     "@changesets/cli",
     "auto-release",
