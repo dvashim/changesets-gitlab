@@ -1,5 +1,16 @@
 # changesets-gitlab
 
+## 0.0.3
+
+### Patch Changes
+
+- [#5](https://github.com/dvashim/changesets-gitlab/pull/5) [`702f3e4`](https://github.com/dvashim/changesets-gitlab/commit/702f3e44a844d7a1a5d679b8f82d88bf9226b1d0) Thanks [@aleksei-reznichenko](https://github.com/aleksei-reznichenko)! - Improve CI and release workflow configuration
+
+  - **Build:** Centralize Node.js version in `.node-version` file instead of hardcoding in workflows
+  - **CI:** Add `registry-url` and `NODE_AUTH_TOKEN` for reliable npm provenance publishing
+  - **CI:** Move build step into publish command to skip unnecessary builds on version-only runs
+  - **CI:** Remove redundant `--provenance` flag and default action options
+
 ## 0.0.2
 
 ### Patch Changes
