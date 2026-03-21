@@ -3,7 +3,7 @@
   "changelog": [
     "@changesets/changelog-github",
     {
-      "repo": "un-ts/changesets-gitlab"
+      "repo": "@dvashim/changesets-gitlab"
     }
   ],
   "commit": false,
