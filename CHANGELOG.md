@@ -1,5 +1,20 @@
 # changesets-gitlab
 
+## 0.0.2
+
+### Patch Changes
+
+- [#1](https://github.com/dvashim/changesets-gitlab/pull/1) [`525b196`](https://github.com/dvashim/changesets-gitlab/commit/525b19646d766f8ef34a5ce0cbcc82a39d30e049) Thanks [@aleksei-reznichenko](https://github.com/aleksei-reznichenko)! - Fork setup and tooling migration
+
+  - **Build:** Migrate from yarn to pnpm with updated lockfile and package config
+  - **Build:** Update dependencies and TypeScript settings
+  - **CI:** Simplify workflows for the new fork
+  - **Refactor:** Apply biome formatting and remove eslint directives
+  - **Chore:** Remove upstream tooling configs (codesandbox, commitlint, prettier, renovate, size-limit)
+  - **Chore:** Sort package.json fields per sort-package-json conventions
+  - **Docs:** Rewrite README with pnpm examples and remove yarn references
+  - **Docs:** Add CLAUDE.md with architecture details
+
 ## 0.13.4
 
 ### Patch Changes
