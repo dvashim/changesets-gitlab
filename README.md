@@ -1,6 +1,6 @@
 # @dvashim/changesets-gitlab
 
-[![npm version](https://img.shields.io/npm/v/@dvashim/changesets-gitlab.svg?logo=npm&style=flat-square&color2=07c&label=@dvashim/changesets-gitlab)](https://www.npmjs.com/package/@dvashim/changesets-gitlab) [![npm downloads](https://img.shields.io/npm/dm/@dvashim/changesets-gitlab?logo=npm&style=flat-square&color=07c)](https://www.npmjs.com/package/@dvashim/changesets-gitlab) [![Checked with Biome](https://img.shields.io/badge/Checked_with-Biome-60a5fa?style=flat-square&logo=biome&color=07c&logoColor=fff)](https://biomejs.dev)
+[![npm version](https://img.shields.io/npm/v/@dvashim/changesets-gitlab.svg?logo=npm&style=flat-square&color=07c&label=@dvashim/changesets-gitlab)](https://www.npmjs.com/package/@dvashim/changesets-gitlab) [![npm downloads](https://img.shields.io/npm/dm/@dvashim/changesets-gitlab?logo=npm&style=flat-square&color=07c)](https://www.npmjs.com/package/@dvashim/changesets-gitlab) [![Checked with Biome](https://img.shields.io/badge/Checked_with-Biome-60a5fa?style=flat-square&logo=biome&color=07c&logoColor=fff)](https://biomejs.dev)
 
 > Based on project [`un-ts/changesets-gitlab`](https://github.com/un-ts/changesets-gitlab) by [JounQin](https://github.com/JounQin)
 
