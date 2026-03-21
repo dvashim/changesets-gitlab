@@ -1,0 +1,11 @@
+coverage
+lib
+node_modules
+.*cache
+.env
+.type-coverage
+.yarn/*
+!.yarn/releases
+!.yarn/plugins
+*.log
+*.tsbuildinfo
