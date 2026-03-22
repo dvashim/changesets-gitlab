@@ -1,5 +1,17 @@
 # changesets-gitlab
 
+## 0.1.0
+
+### Minor Changes
+
+- [#12](https://github.com/dvashim/changesets-gitlab/pull/12) [`a8be123`](https://github.com/dvashim/changesets-gitlab/commit/a8be123a2d3aa8fe271852750dbc515be4616cfa) Thanks [@aleksei-reznichenko](https://github.com/aleksei-reznichenko)! - Add GITLAB_CHANGESETS_DEBUG env var for debug logging
+
+  - **Refactor:** Split monolithic `comment.ts` into focused modules under `src/comment/`
+  - **Refactor:** Split monolithic `utils.ts` into individual files under `src/utils/`
+  - **Feature:** Add `GITLAB_CHANGESETS_DEBUG` env var to enable verbose API fetch logging, replacing `--verbose` CLI flag
+  - **Config:** Upgrade biome config to `react-balanced` with explicit rule overrides
+  - **Lint:** Apply biome lint fixes across codebase (unicode regex flags, interface-to-type, destructuring)
+
 ## 0.0.4
 
 ### Patch Changes
