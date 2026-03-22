@@ -160,6 +160,8 @@ ${newChangesetTemplate}
             releasePlan
           )) + errFromFetchingChangedFiles
 
+    VERBOSE_LOGGER.print({ prComment })
+
     switch (commentType) {
       case 'discussion': {
         if (noteInfo) {
