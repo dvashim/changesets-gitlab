@@ -2,7 +2,7 @@ export class Logger {
   context: string
   isEnabled = false
 
-  constructor(context: 'api' | 'comment' | 'cli') {
+  constructor(context: string) {
     this.context = context
   }
 

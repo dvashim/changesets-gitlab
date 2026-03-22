@@ -13,11 +13,14 @@ import type {
 import type { Gitlab } from '@gitbeaker/core'
 import micromatch from 'micromatch'
 import { parse } from 'yaml'
+import { Logger } from './Logger.ts'
 import { getAllFiles } from './utils/index.js'
 
 function fetchFile(path: string) {
   return fs.readFile(path, 'utf8')
 }
+
+const PKG_LOGGER = new Logger('pkg')
 
 export const getChangedPackages = async ({
   changedFiles: changedFilesPromise,
@@ -79,6 +82,8 @@ export const getChangedPackages = async ({
   const potentialWorkspaceDirectories: string[] = []
   let isPnpm = false
   const changedFiles = await changedFilesPromise
+
+  PKG_LOGGER.print('files', tree)
 
   for (const item of tree) {
     if (item.endsWith('/package.json')) {
@@ -150,6 +155,8 @@ export const getChangedPackages = async ({
     packages: [] as { packageJson: PackageJSON; dir: string }[],
   }
 
+  PKG_LOGGER.print('tool', tool)
+
   if (tool) {
     if (
       !(
@@ -161,10 +168,13 @@ export const getChangedPackages = async ({
     }
 
     const matches = micromatch(potentialWorkspaceDirectories, tool.globs)
+    PKG_LOGGER.print('tool matches', matches)
     packages.packages = await Promise.all(matches.map((dir) => getPackage(dir)))
   } else {
     packages.packages.push(packages.root)
   }
+
+  PKG_LOGGER.print('packages', packages.packages)
 
   if (hasErrored) {
     throw new Error('an error occurred when fetching files')
@@ -181,19 +191,21 @@ export const getChangedPackages = async ({
     await preStatePromise
   )
 
-  return {
-    changedPackages: (packages.tool === 'root'
+  const changedPackages = (
+    packages.tool === 'root'
       ? packages.packages
       : packages.packages.filter((pkg) =>
           changedFiles.some((changedFile) => changedFile.includes(pkg.dir))
         )
+  )
+    .filter(
+      (pkg) =>
+        pkg.packageJson.private !== true
+        && !config.ignore.includes(pkg.packageJson.name)
     )
-      .filter(
-        (pkg) =>
-          pkg.packageJson.private !== true
-          && !config.ignore.includes(pkg.packageJson.name)
-      )
-      .map((x) => x.packageJson.name),
-    releasePlan,
-  }
+    .map((x) => x.packageJson.name)
+
+  PKG_LOGGER.print('changedPackages', changedPackages)
+
+  return { changedPackages, releasePlan }
 }
