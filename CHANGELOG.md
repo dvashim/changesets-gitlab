@@ -1,5 +1,11 @@
 # changesets-gitlab
 
+## 0.1.4
+
+### Patch Changes
+
+- [#20](https://github.com/dvashim/changesets-gitlab/pull/20) [`3c9c569`](https://github.com/dvashim/changesets-gitlab/commit/3c9c5691653c1e96a5c8907f4c7322bc28612e09) Thanks [@aleksei-reznichenko](https://github.com/aleksei-reznichenko)! - Add verbose debug logging to get-changed-packages and widen Logger context type to accept any string
+
 ## 0.1.3
 
 ### Patch Changes
