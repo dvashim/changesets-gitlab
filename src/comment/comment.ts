@@ -101,10 +101,17 @@ export const comment = async () => {
       noteInfo,
       hasChangeset,
       changedPackages,
-      releasePlanChangesets: releasePlan?.changesets,
-      releasePlanPreState: releasePlan?.preState,
-      releasePlanReleases: releasePlan?.releases,
     })
+
+    VERBOSE_LOGGER.print(
+      'releasePlanChangesets',
+      ...(releasePlan?.changesets ?? [])
+    )
+
+    VERBOSE_LOGGER.print(
+      'releasePlanReleases',
+      ...(releasePlan?.releases ?? [])
+    )
 
     const newChangesetFileName = `.changeset/${humanId({
       separator: '-',
