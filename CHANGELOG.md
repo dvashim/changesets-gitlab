@@ -1,5 +1,11 @@
 # changesets-gitlab
 
+## 0.1.3
+
+### Patch Changes
+
+- [#18](https://github.com/dvashim/changesets-gitlab/pull/18) [`0d7523d`](https://github.com/dvashim/changesets-gitlab/commit/0d7523dc79d7e3f16f873eec3f01a9a737c55759) Thanks [@aleksei-reznichenko](https://github.com/aleksei-reznichenko)! - Improve verbose logging of release plan by spreading changesets and releases as individual arguments
+
 ## 0.1.2
 
 ### Patch Changes
