@@ -101,7 +101,9 @@ export const comment = async () => {
       noteInfo,
       hasChangeset,
       changedPackages,
-      releasePlan,
+      releasePlanChangesets: releasePlan?.changesets,
+      releasePlanPreState: releasePlan?.preState,
+      releasePlanReleases: releasePlan?.releases,
     })
 
     const newChangesetFileName = `.changeset/${humanId({
@@ -150,6 +152,8 @@ ${newChangesetTemplate}
             newChangesetTemplateFallback,
             releasePlan
           )) + errFromFetchingChangedFiles
+
+    VERBOSE_LOGGER.print({ prComment })
 
     switch (commentType) {
       case 'discussion': {
