@@ -101,6 +101,7 @@ export const comment = async () => {
       noteInfo,
       hasChangeset,
       changedPackages,
+      releasePlan,
     })
 
     VERBOSE_LOGGER.print(
