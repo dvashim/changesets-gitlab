@@ -1,5 +1,6 @@
 import fs from 'node:fs/promises'
 import nodePath from 'node:path'
+import process from 'node:process'
 import assembleReleasePlan from '@changesets/assemble-release-plan'
 import { parse as parseConfig } from '@changesets/config'
 import parseChangeset from '@changesets/parse'
@@ -12,7 +13,7 @@ import type {
 import type { Gitlab } from '@gitbeaker/core'
 import micromatch from 'micromatch'
 import { parse } from 'yaml'
-import { getAllFiles } from './utils.js'
+import { getAllFiles } from './utils/index.js'
 
 function fetchFile(path: string) {
   return fs.readFile(path, 'utf8')
@@ -74,7 +75,7 @@ export const getChangedPackages = async ({
   const tree = await getAllFiles(process.cwd())
 
   let preStatePromise: Promise<PreState> | undefined
-  const changesetPromises: Array<Promise<NewChangeset>> = []
+  const changesetPromises: Promise<NewChangeset>[] = []
   const potentialWorkspaceDirectories: string[] = []
   let isPnpm = false
   const changedFiles = await changedFilesPromise
@@ -93,11 +94,13 @@ export const getChangedPackages = async ({
       && item.endsWith('.md')
       && changedFiles.includes(item)
     ) {
-      const res = /\.changeset\/([^.]+)\.md/.exec(item)
+      const res = /\.changeset\/([^.]+)\.md/u.exec(item)
       if (!res) {
         throw new Error('could not get name from changeset filename')
       }
-      const id = res[1]
+
+      const [, id] = res
+
       changesetPromises.push(
         fetchTextFile(item).then((text) => ({
           ...parseChangeset(text),
@@ -149,8 +152,10 @@ export const getChangedPackages = async ({
 
   if (tool) {
     if (
-      !Array.isArray(tool.globs)
-      || !tool.globs.every((x) => typeof x === 'string')
+      !(
+        Array.isArray(tool.globs)
+        && tool.globs.every((x) => typeof x === 'string')
+      )
     ) {
       throw new Error(`globs are not valid: ${JSON.stringify(tool.globs)}`)
     }

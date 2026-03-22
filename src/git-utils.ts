@@ -1,6 +1,6 @@
 import { exec } from '@actions/exec'
 import { env } from './env.js'
-import { execWithOutput, identify } from './utils.js'
+import { execWithOutput, identify } from './utils/index.js'
 
 export const setupUser = async () => {
   await exec('git', [
@@ -37,9 +37,10 @@ export const switchToMaybeExistingBranch = async (branch: string) => {
   const { stderr } = await execWithOutput('git', ['checkout', branch], {
     ignoreReturnCode: true,
   })
-  const isCreatingBranch =
-    !stderr.includes(`Switched to branch '${branch}'`) // it could be a detached HEAD
-    && !stderr.includes(`Switched to a new branch '${branch}'`)
+  const isCreatingBranch = !(
+    stderr.includes(`Switched to branch '${branch}'`) // it could be a detached HEAD
+    || stderr.includes(`Switched to a new branch '${branch}'`)
+  )
   if (isCreatingBranch) {
     await exec('git', ['checkout', '-b', branch])
   }

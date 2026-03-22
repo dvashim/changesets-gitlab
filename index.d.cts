@@ -1,3 +1,1 @@
-import changesetsGitlab from './lib/index.js'
-
-export = changesetsGitlab
+export { default } from './lib/index.js'

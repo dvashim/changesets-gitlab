@@ -1,4 +1,29 @@
-export interface MainCommandOptions {
+type MergeRequestVariables =
+  | {
+      // this is used to be checked if the current job is a merge request job
+      CI_MERGE_REQUEST_SOURCE_BRANCH_NAME: undefined
+    }
+  | {
+      CI_MERGE_REQUEST_IID: number
+      CI_MERGE_REQUEST_PROJECT_URL: string
+      CI_MERGE_REQUEST_SOURCE_BRANCH_NAME: string
+      CI_MERGE_REQUEST_SOURCE_BRANCH_SHA: string
+      CI_MERGE_REQUEST_TITLE: string
+    }
+
+type GitLabCIPredefinedVariables = { GITLAB_USER_NAME: string } & (
+  | {
+      // this is used to be checked if the current job is in a CI environment
+      CI: undefined
+    }
+  | {
+      CI: 'true'
+      CI_PROJECT_PATH: string
+      CI_SERVER_URL: string
+    }
+)
+
+export type MainCommandOptions = {
   published?: string
   onlyChangesets?: string
 }
@@ -26,29 +51,6 @@ export type Env = GitLabCIPredefinedVariables &
 
     HOME: string
     NPM_TOKEN?: string
+
+    GITLAB_CHANGESETS_DEBUG?: boolean
   }
-
-type MergeRequestVariables =
-  | {
-      // this is used to be checked if the current job is a merge request job
-      CI_MERGE_REQUEST_SOURCE_BRANCH_NAME: undefined
-    }
-  | {
-      CI_MERGE_REQUEST_IID: number
-      CI_MERGE_REQUEST_PROJECT_URL: string
-      CI_MERGE_REQUEST_SOURCE_BRANCH_NAME: string
-      CI_MERGE_REQUEST_SOURCE_BRANCH_SHA: string
-      CI_MERGE_REQUEST_TITLE: string
-    }
-
-type GitLabCIPredefinedVariables = { GITLAB_USER_NAME: string } & (
-  | {
-      // this is used to be checked if the current job is in a CI environment
-      CI: undefined
-    }
-  | {
-      CI: 'true'
-      CI_PROJECT_PATH: string
-      CI_SERVER_URL: string
-    }
-)

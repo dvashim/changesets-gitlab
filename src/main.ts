@@ -15,7 +15,7 @@ import {
   getOptionalInput,
   getUsername,
   TRUTHY_VALUES,
-} from './utils.js'
+} from './utils/index.js'
 
 export const main = async ({
   published,
@@ -43,7 +43,7 @@ export const main = async ({
         'origin',
         `${url.protocol}//${encodeURIComponent(username)}:${GITLAB_TOKEN}@${
           url.host
-        }${url.pathname.replace(/\/$/, '')}/${env.CI_PROJECT_PATH}.git`,
+        }${url.pathname.replace(/\/$/u, '')}/${env.CI_PROJECT_PATH}.git`,
       ],
       { silent: !TRUTHY_VALUES.has(env.DEBUG_GITLAB_CREDENTIAL!) }
     )
@@ -55,67 +55,67 @@ export const main = async ({
   const hasChangesets = changesets.length > 0
   const hasPublishScript = !!publishScript
 
-  switch (true) {
-    case !hasChangesets && !hasPublishScript: {
-      console.log('No changesets found')
-      return
-    }
+  if (!(hasChangesets || hasPublishScript)) {
+    console.log('No changesets found')
+    return
+  }
 
-    case !hasChangesets && hasPublishScript: {
-      console.log(
-        'No changesets found, attempting to publish any unpublished packages to npm'
+  if (!hasChangesets && hasPublishScript) {
+    console.log(
+      'No changesets found, attempting to publish any unpublished packages to npm'
+    )
+
+    const npmrcPath = `${env.HOME}/.npmrc`
+    if (fs.existsSync(npmrcPath)) {
+      console.log('Found existing .npmrc file')
+    } else if (NPM_TOKEN) {
+      console.log('No .npmrc file found, creating one')
+      await fs.promises.writeFile(
+        npmrcPath,
+        `//registry.npmjs.org/:_authToken=${NPM_TOKEN}`
+      )
+    } else {
+      setFailed(
+        'No `.npmrc` found nor `NPM_TOKEN` provided, unable to publish packages'
       )
 
-      const npmrcPath = `${env.HOME}/.npmrc`
-      if (fs.existsSync(npmrcPath)) {
-        console.log('Found existing .npmrc file')
-      } else if (NPM_TOKEN) {
-        console.log('No .npmrc file found, creating one')
-        await fs.promises.writeFile(
-          npmrcPath,
-          `//registry.npmjs.org/:_authToken=${NPM_TOKEN}`
-        )
-      } else {
-        setFailed(
-          'No `.npmrc` found nor `NPM_TOKEN` provided, unable to publish packages'
-        )
-        return
-      }
-
-      const result = await runPublish({
-        script: publishScript,
-        gitlabToken: GITLAB_TOKEN,
-        createGitlabReleases: !FALSY_VALUES.has(
-          getInput('create_gitlab_releases')
-        ),
-      })
-
-      if (result.published) {
-        setOutput('published', true)
-        setOutput('publishedPackages', result.publishedPackages)
-        exportVariable('PUBLISHED', true)
-        exportVariable('PUBLISHED_PACKAGES', result.publishedPackages)
-        if (published) {
-          execSync(published)
-        }
-      }
       return
     }
 
-    case hasChangesets: {
-      await runVersion({
-        script: getOptionalInput('version'),
-        gitlabToken: GITLAB_TOKEN,
-        mrTitle: getOptionalInput('title'),
-        mrTargetBranch: getOptionalInput('target_branch'),
-        commitMessage: getOptionalInput('commit'),
-        removeSourceBranch: getInput('remove_source_branch') === 'true',
-        hasPublishScript,
-      })
+    const result = await runPublish({
+      script: publishScript,
+      gitlabToken: GITLAB_TOKEN,
+      createGitlabReleases: !FALSY_VALUES.has(
+        getInput('create_gitlab_releases')
+      ),
+    })
 
-      if (onlyChangesets) {
-        execSync(onlyChangesets)
+    if (result.published) {
+      setOutput('published', true)
+      setOutput('publishedPackages', result.publishedPackages)
+      exportVariable('PUBLISHED', true)
+      exportVariable('PUBLISHED_PACKAGES', result.publishedPackages)
+      if (published) {
+        execSync(published)
       }
+    }
+
+    return
+  }
+
+  if (hasChangesets) {
+    await runVersion({
+      script: getOptionalInput('version'),
+      gitlabToken: GITLAB_TOKEN,
+      mrTitle: getOptionalInput('title'),
+      mrTargetBranch: getOptionalInput('target_branch'),
+      commitMessage: getOptionalInput('commit'),
+      removeSourceBranch: getInput('remove_source_branch') === 'true',
+      hasPublishScript,
+    })
+
+    if (onlyChangesets) {
+      execSync(onlyChangesets)
     }
   }
 }
