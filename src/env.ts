@@ -1,7 +1,11 @@
 /** biome-ignore-all lint/style/noNonNullAssertion: fix later */
+/** biome-ignore-all lint/style/useNamingConvention: allow */
+
+import process from 'node:process'
 import { setFailed } from '@actions/core'
 import dotenv from 'dotenv'
 import type { Env } from './types.js'
+import { TRUTHY_VALUES } from './utils/constants.ts'
 
 dotenv.config()
 
@@ -18,6 +22,9 @@ export const env = {
   GITLAB_CI_USER_EMAIL:
     process.env.GITLAB_CI_USER_EMAIL || 'gitlab[bot]@users.noreply.gitlab.com',
   GITLAB_COMMENT_TYPE: process.env.GITLAB_COMMENT_TYPE ?? 'discussion',
+  GITLAB_CHANGESETS_DEBUG: TRUTHY_VALUES.has(
+    process.env.GITLAB_CHANGESETS_DEBUG!
+  ),
 
   // only check for the token if we are explicitly using it
 

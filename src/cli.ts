@@ -1,14 +1,15 @@
 #!/usr/bin/env node
 
-import './env.js'
+import process from 'node:process'
 import { program } from 'commander'
-import { comment } from './comment.js'
+import { comment } from './comment/comment.js'
+import './env.js'
 import { main } from './main.js'
-import { cjsRequire, getOptionalInput } from './utils.js'
+import { cjsRequire, getOptionalInput } from './utils/index.js'
 
-const run = async () => {
+const run = () => {
   program.version(
-    (cjsRequire('../package.json') as { version: string }).version
+    (cjsRequire('../../package.json') as { version: string }).version
   )
 
   program.command('comment').action(async () => {
