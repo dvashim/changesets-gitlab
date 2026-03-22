@@ -1,5 +1,11 @@
 # changesets-gitlab
 
+## 0.1.2
+
+### Patch Changes
+
+- [#16](https://github.com/dvashim/changesets-gitlab/pull/16) [`7f603b3`](https://github.com/dvashim/changesets-gitlab/commit/7f603b3c87404d7ec4a89e2c9112f9c7790025ab) Thanks [@aleksei-reznichenko](https://github.com/aleksei-reznichenko)! - Expand verbose debug logging for release plan details and comment body
+
 ## 0.1.1
 
 ### Patch Changes
