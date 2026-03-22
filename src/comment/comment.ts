@@ -54,12 +54,13 @@ export const comment = async () => {
       context.projectId,
       mrIid
     ).catch(async (err: unknown) => {
-      VERBOSE_LOGGER.print('error 0', err)
+      VERBOSE_LOGGER.print('allDiffs failed, trying showChanges fallback', err)
 
       if (
         !(err instanceof GitbeakerRequestError)
         || err.cause?.response.status !== HTTP_STATUS_NOT_FOUND
       ) {
+        VERBOSE_LOGGER.print('allDiffs failed with non-404 error', err)
         throw err
       }
 
@@ -81,7 +82,7 @@ export const comment = async () => {
           ),
           api,
         }).catch((err: unknown) => {
-          VERBOSE_LOGGER.print('error 1', err)
+          VERBOSE_LOGGER.print('getChangedPackages failed', err)
 
           if (err instanceof ValidationError) {
             errFromFetchingChangedFiles = `<details><summary>💥 An error occurred when fetching the changed packages and changesets in this MR</summary>\n\n\`\`\`\n${err.message}\n\`\`\`\n\n</details>\n`
@@ -96,21 +97,34 @@ export const comment = async () => {
         }),
       ] as const)
 
+    VERBOSE_LOGGER.print('promise result', {
+      noteInfo,
+      hasChangeset,
+      changedPackages,
+      releasePlan,
+    })
+
     const newChangesetFileName = `.changeset/${humanId({
       separator: '-',
       capitalize: false,
     })}.md`
+
+    VERBOSE_LOGGER.print({ newChangesetFileName })
 
     const newChangesetTemplate = getNewChangesetTemplate(
       changedPackages,
       env.CI_MERGE_REQUEST_TITLE
     )
 
+    VERBOSE_LOGGER.print({ newChangesetTemplate })
+
     const addChangesetUrl = `${env.CI_MERGE_REQUEST_PROJECT_URL}/-/new/${mrBranch}?file_name=${newChangesetFileName}&file=${encodeURIComponent(newChangesetTemplate)}${
       commitMessage
         ? `&commit_message=${encodeURIComponent(commitMessage)}`
         : ''
     }`
+
+    VERBOSE_LOGGER.print({ addChangesetUrl })
 
     const newChangesetTemplateFallback = `
 If the above link doesn't fill the changeset template file name and content which is [a known regression on GitLab >= 16.11](https://gitlab.com/gitlab-org/gitlab/-/issues/532221), you can copy and paste the following template into ${newChangesetFileName} instead:
@@ -119,6 +133,8 @@ If the above link doesn't fill the changeset template file name and content whic
 ${newChangesetTemplate}
 \`\`\`
 `.trim()
+
+    VERBOSE_LOGGER.print({ newChangesetTemplateFallback })
 
     const prComment =
       (hasChangeset
@@ -144,6 +160,8 @@ ${newChangesetTemplate}
               env.GITLAB_COMMENT_DISCUSSION_AUTO_RESOLVE || '1'
             )
           ) {
+            VERBOSE_LOGGER.print('resolving discussion', noteInfo.discussionId)
+
             await api.MergeRequestDiscussions.resolve(
               context.projectId,
               mrIid,
@@ -151,6 +169,12 @@ ${newChangesetTemplate}
               true
             )
           }
+
+          VERBOSE_LOGGER.print(
+            'editing discussion note',
+            noteInfo.discussionId,
+            noteInfo.noteId
+          )
 
           return api.MergeRequestDiscussions.editNote(
             context.projectId,
@@ -163,14 +187,18 @@ ${newChangesetTemplate}
           )
         }
 
+        VERBOSE_LOGGER.print('creating new discussion')
+
         return api.MergeRequestDiscussions.create(
           context.projectId,
           mrIid,
           prComment
         )
       }
+
       case 'note': {
         if (noteInfo) {
+          VERBOSE_LOGGER.print('editing note', noteInfo.noteId)
           return api.MergeRequestNotes.edit(
             context.projectId,
             mrIid,
@@ -179,14 +207,12 @@ ${newChangesetTemplate}
           )
         }
 
+        VERBOSE_LOGGER.print('creating new note')
         return api.MergeRequestNotes.create(context.projectId, mrIid, prComment)
       }
 
       default: {
-        VERBOSE_LOGGER.print(
-          'error 2',
-          `Invalid comment type "${commentType}", should be "discussion" or "note"`
-        )
+        VERBOSE_LOGGER.print('invalid comment type', commentType)
 
         throw new Error(
           `Invalid comment type "${commentType}", should be "discussion" or "note"`
@@ -194,7 +220,7 @@ ${newChangesetTemplate}
       }
     }
   } catch (err) {
-    VERBOSE_LOGGER.print('error 3', err)
+    VERBOSE_LOGGER.print('comment failed', err)
 
     if (err instanceof GitbeakerRequestError && err.cause) {
       const { description, request, response } = err.cause
