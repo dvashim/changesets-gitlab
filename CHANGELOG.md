@@ -1,5 +1,11 @@
 # changesets-gitlab
 
+## 0.1.1
+
+### Patch Changes
+
+- [#14](https://github.com/dvashim/changesets-gitlab/pull/14) [`eb6cb55`](https://github.com/dvashim/changesets-gitlab/commit/eb6cb55d6e6407ef67ba5b6a0632c4b885f1b32a) Thanks [@aleksei-reznichenko](https://github.com/aleksei-reznichenko)! - Improve verbose debug log messages in comment command with descriptive labels
+
 ## 0.1.0
 
 ### Minor Changes
