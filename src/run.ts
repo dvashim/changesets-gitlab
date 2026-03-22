@@ -1,5 +1,6 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
+import process from 'node:process'
 import { exec } from '@actions/exec'
 import type { Gitlab } from '@gitbeaker/core'
 import type { Package } from '@manypkg/get-packages'
@@ -20,9 +21,26 @@ import {
   getOptionalInput,
   getVersionsByDirectory,
   sortTheThings,
-} from './utils.js'
+} from './utils/index.js'
 
-const limit = pLimit(2 * 3)
+const MAGIC_NUMBER = 3
+const limit = pLimit(2 * MAGIC_NUMBER)
+
+const requireChangesetsCliPkgJson = (cwd: string) => {
+  try {
+    return cjsRequire(resolveFrom(cwd, '@changesets/cli/package.json')) as {
+      version: string
+    }
+  } catch (err: unknown) {
+    if ((err as { code: string } | undefined)?.code === 'MODULE_NOT_FOUND') {
+      throw new Error(
+        `Have you forgotten to install \`@changesets/cli\` in "${cwd}"?`,
+        { cause: err }
+      )
+    }
+    throw err
+  }
+}
 
 export const createRelease = async (
   api: Gitlab,
@@ -55,14 +73,14 @@ export const createRelease = async (
   }
 }
 
-export interface PublishOptions {
+export type PublishOptions = {
   script: string
   gitlabToken: string
   createGitlabReleases?: boolean
   cwd?: string
 }
 
-export interface PublishedPackage {
+export type PublishedPackage = {
   name: string
   version: string
 }
@@ -78,7 +96,7 @@ export async function runPublish({
   cwd = process.cwd(),
 }: PublishOptions): Promise<PublishResult> {
   const api = createApi(gitlabToken)
-  const [publishCommand, ...publishArgs] = script.split(/\s+/)
+  const [publishCommand, ...publishArgs] = script.split(/\s+/u)
 
   const changesetPublishOutput = await execWithOutput(
     publishCommand,
@@ -106,12 +124,12 @@ export async function runPublish({
   if (tool.type === 'root') {
     if (packages.length !== 1) {
       throw new Error(
-        `No package found.`
+        'No package found.'
           + 'This is probably a bug in the action, please open an issue'
       )
     }
-    const pkg = packages[0]
-    const newTagRegex = /New tag:/
+    const [pkg] = packages
+    const newTagRegex = /New tag:/u
 
     for (const line of changesetPublishOutput.stdout.split('\n')) {
       const match = newTagRegex.exec(line)
@@ -120,13 +138,14 @@ export async function runPublish({
         releasedPackages.push(pkg)
         const tagName = `v${pkg.packageJson.version}`
         if (createGitlabReleases) {
+          // biome-ignore lint/performance/noAwaitInLoops: allow
           await createRelease(api, { pkg, tagName })
         }
         break
       }
     }
   } else {
-    const newTagRegex = /New tag:\s+(@[^/]+\/[^@]+|[^/]+)@(\S+)/
+    const newTagRegex = /New tag:\s+(@[^/]+\/[^@]+|[^/]+)@(\S+)/u
     const packagesByName = new Map(packages.map((x) => [x.packageJson.name, x]))
 
     for (const line of changesetPublishOutput.stdout.split('\n')) {
@@ -134,7 +153,8 @@ export async function runPublish({
       if (match === null) {
         continue
       }
-      const pkgName = match[1]
+
+      const [, pkgName] = match
       const pkg = packagesByName.get(pkgName)
       if (pkg === undefined) {
         throw new Error(
@@ -144,6 +164,7 @@ export async function runPublish({
       }
       releasedPackages.push(pkg)
     }
+
     if (!pushAllTags) {
       await Promise.all(
         releasedPackages.map((pkg) =>
@@ -151,6 +172,7 @@ export async function runPublish({
         )
       )
     }
+
     if (createGitlabReleases) {
       await Promise.all(
         releasedPackages.map((pkg) =>
@@ -178,22 +200,7 @@ export async function runPublish({
   return { published: false }
 }
 
-const requireChangesetsCliPkgJson = (cwd: string) => {
-  try {
-    return cjsRequire(resolveFrom(cwd, '@changesets/cli/package.json')) as {
-      version: string
-    }
-  } catch (err: unknown) {
-    if ((err as { code: string } | undefined)?.code === 'MODULE_NOT_FOUND') {
-      throw new Error(
-        `Have you forgotten to install \`@changesets/cli\` in "${cwd}"?`
-      )
-    }
-    throw err
-  }
-}
-
-export interface VersionOptions {
+export type VersionOptions = {
   script?: string
   gitlabToken: string
   cwd?: string
@@ -231,7 +238,7 @@ export async function runVersion({
   const versionsByDirectory = await getVersionsByDirectory(cwd)
 
   if (script) {
-    const [versionCommand, ...versionArgs] = script.split(/\s+/)
+    const [versionCommand, ...versionArgs] = script.split(/\s+/u)
     await exec(versionCommand, versionArgs, { cwd })
   } else {
     const changesetsCliPkgJson = requireChangesetsCliPkgJson(cwd)

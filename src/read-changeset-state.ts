@@ -1,8 +1,9 @@
+import process from 'node:process'
 import { readPreState } from '@changesets/pre'
 import readChangesets from '@changesets/read'
 import type { NewChangeset, PreState } from '@changesets/types'
 
-export interface ChangesetState {
+export type ChangesetState = {
   preState: PreState | undefined
   changesets: NewChangeset[]
 }

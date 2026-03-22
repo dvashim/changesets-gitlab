@@ -1,3 +1,29 @@
 {
-  "extends": ["@dvashim/biome-config/react-recommended"]
+  "$schema": "https://biomejs.dev/schemas/latest/schema.json",
+  "extends": ["@dvashim/biome-config/react-balanced"],
+  "linter": {
+    "rules": {
+      "complexity": {
+        "noExcessiveLinesPerFunction": "off",
+        "noExcessiveCognitiveComplexity": "off"
+      },
+      "nursery": {
+        "noExcessiveLinesPerFile": "off",
+        "noContinue": "off",
+        "useNamedCaptureGroup": "off"
+      },
+      "suspicious": {
+        "noConsole": "off"
+      },
+      "performance": {
+        "useTopLevelRegex": "off"
+      },
+      "correctness": {
+        "noNodejsModules": "off"
+      },
+      "style": {
+        "useNamingConvention": "off"
+      }
+    }
+  }
 }
